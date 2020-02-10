@@ -71,5 +71,20 @@ server.delete('/api/users/:id', (req, res) => {
 		});
 });
 
+//updates user
+server.put('/api/users/:id', (req, res) => {
+	const { id } = req.params;
+	const updatedInfo = req.body;
+
+	db.update(id, updatedInfo)
+		.then(updated => {
+			res.status(200).json(updated);
+		})
+		.catch(err => {
+			console.log(err);
+			res.status(500).json({ errorMessage: 'error' });
+		});
+});
+
 const port = 5000;
 server.listen(port, () => console.log(`\n***API on port ${port} \n`));
