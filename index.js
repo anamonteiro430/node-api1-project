@@ -42,5 +42,19 @@ server.post('/api/users', (req, res) => {
 		});
 });
 
+//delete a user
+server.delete('/api/users/:id', (req, res) => {
+	const { id } = req.params;
+
+	db.remove(id)
+		.then(removed => {
+			res.status(200).json(removed);
+		})
+		.catch(err => {
+			console.log(err);
+			res.status(500).json({ errorMessage: 'error' });
+		});
+});
+
 const port = 5000;
 server.listen(port, () => console.log(`\n***API on port ${port} \n`));
