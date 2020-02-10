@@ -26,6 +26,21 @@ server.get('/api/users', (req, res) => {
 		});
 });
 
+// get specific user
+server.get('/api/users/:id', (req, res) => {
+	const { id } = req.params;
+
+	db.findById(id)
+		.then(user => {
+			console.log(user);
+			res.status(200).json(user);
+		})
+		.catch(err => {
+			console.log(err);
+			res.status(500).json({ errorMessage: 'error' });
+		});
+});
+
 //create a new user
 server.post('/api/users', (req, res) => {
 	const usersInfo = req.body;
