@@ -8,7 +8,7 @@ export const Users = () => {
 		axios
 			.get('/api/users')
 			.then(res => {
-				console.log(res);
+				console.log('res', res);
 				setUsers(res);
 			})
 			.catch(err => console.log(err));
