@@ -1,12 +1,15 @@
 // implement your API here
 const express = require('express'); //require the express npm module
 
+const cors = require('cors');
+
 const db = require('./data/db.js'); //import
 
 const server = express();
 
 //teaches express how to read JSON from the body
 server.use(express.json()); //needed for POST, PUT and PATCH
+server.use(express.json());
 
 //callback - request handler function
 server.get('/', (req, res) => {
@@ -22,7 +25,9 @@ server.get('/api/users', (req, res) => {
 		})
 		.catch(err => {
 			console.log(err);
-			res.status(500).json({ errorMessage: 'error' });
+			res.status(500).json({
+				errorMessage: 'The users information could not be retrieved.'
+			});
 		});
 });
 
@@ -32,29 +37,39 @@ server.get('/api/users/:id', (req, res) => {
 
 	db.findById(id)
 		.then(user => {
-			console.log(user);
 			res.status(200).json(user);
 		})
 		.catch(err => {
-			console.log(err);
-			res.status(500).json({ errorMessage: 'error' });
+			res.status(500).json({
+				errorMessage: 'The user with the specified ID does not exist.'
+			});
 		});
 });
 
 //create a new user
 server.post('/api/users', (req, res) => {
-	const usersInfo = req.body;
+	const { name, bio } = req.body;
 
 	console.log('body', req.body);
 
-	db.insert(usersInfo)
-		.then(user => {
-			res.status(201).json(user);
-		})
-		.catch(err => {
-			console.log(err);
-			res.status(500).json({ errorMessage: 'error' });
-		});
+	if (name && bio) {
+		db.insert(req.body)
+			.then(user => {
+				res.status(201).json(user);
+			})
+			.catch(err => {
+				console.log(err);
+				res.status(500).json({
+					errorMessage:
+						'There was an error while saving the user to the database'
+				});
+			});
+	} else {
+		console.log(res);
+		res
+			.status(400)
+			.json({ errorMessage: 'Please provide name and bio for the user.' });
+	}
 });
 
 //delete a user
@@ -71,7 +86,7 @@ server.delete('/api/users/:id', (req, res) => {
 		});
 });
 
-//updates user
+//updates specific user
 server.put('/api/users/:id', (req, res) => {
 	const { id } = req.params;
 	const updatedInfo = req.body;
